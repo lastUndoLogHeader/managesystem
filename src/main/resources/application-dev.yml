@@ -31,6 +31,22 @@ spring:
         max-idle: 8     # 最大空闲连接
         min-idle: 0     # 最小空闲连接
 
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: 1477143144@qq.com
+    password: nzbqujpvxeqphjfd
+    protocol: smtps
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            trust: smtp.qq.com
+
+
 # ============================================================
 # MyBatis 配置
 # ============================================================

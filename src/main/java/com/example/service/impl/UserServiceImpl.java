@@ -5,6 +5,7 @@ import com.example.dto.LoginRequest;
 import com.example.entity.User;
 import com.example.exception.BusinessException;
 import com.example.mapper.UserMapper;
+import com.example.service.MailService;
 import com.example.service.UserService;
 import com.example.util.BloomFilterUtil;
 import com.example.util.JwtUtils;
@@ -43,6 +44,8 @@ public class UserServiceImpl implements UserService {
     private RedisUtil redisUtil;
     @Autowired
     private BloomFilterUtil bloomFilterUtil;
+    @Autowired
+    private MailService mailService;
 
     @Override
     public UserVO findUserById(Long id) {
@@ -101,6 +104,9 @@ public class UserServiceImpl implements UserService {
         bloomFilterUtil.addUsername(user.getUsername());
         log.info("新用户名被添加到布隆过滤器，用户名：{}", user.getUsername());
 
+        //注册成功发送邮件
+        mailService.sendSimpleMail("2845624577@qq.com", "nihao", "nihao");
+
         // 在 register 方法里，插入成功后生成 Token
         String accessToken = jwtUtils.generateAccessToken(user.getId(), user.getUsername());
         String refreshToken = jwtUtils.generateRefreshToken(user.getId(), user.getUsername());
@@ -125,6 +131,12 @@ public class UserServiceImpl implements UserService {
     public LoginVO login(LoginRequest loginRequest, HttpServletRequest request) {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
+
+        boolean isContained = bloomFilterUtil.mightContainUsername(username);
+        if (!isContained) {
+            log.warn("布隆过滤器确定用户名不存在，用户名：{}", username);
+            throw new BusinessException(ResultCode.USER_NOT_FOUND);
+        }
 
         User user = userMapper.selectUserByUsername(username);
         if (user == null) {
