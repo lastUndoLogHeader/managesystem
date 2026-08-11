@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    namespace 必须和 Mapper 接口的全限定名一致
+    com.example.mapper.UserMapper 就是 UserMapper.java 的完整路径
+-->
+<mapper namespace="com.example.mapper.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.entity.User">
+        <!--
+            <id> 标签：映射主键字段（数据库主键）
+            column: 数据库字段名
+            property: Java 属性名
+        -->
+        <id column="id" property="id"/>
+
+        <!--
+            <result> 标签：映射普通字段
+            column: 数据库字段名
+            property: Java 属性名
+        -->
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+        <result column="nickname" property="nickname"/>
+        <result column="avatar" property="avatar"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="gender" property="gender"/>
+        <result column="birthday" property="birthday"/>
+        <result column="role" property="role"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="last_login_ip" property="lastLoginIp"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- ============================================================
+        查询：根据 ID 查询用户
+        id 必须和 UserMapper 接口中的方法名一致
+        resultType 是返回结果的类型（自动映射，因为开启了驼峰）
+    ============================================================ -->
+    <select id="selectUserById" resultMap="BaseResultMap">
+        SELECT
+            id,
+            username,
+            password,
+            salt,
+            nickname,
+            avatar,
+            email,
+            phone,
+            gender,
+            birthday,
+            role,
+            status,
+            is_deleted,
+            last_login_ip,
+            last_login_time,
+            create_time,
+            update_time
+        FROM user
+        WHERE id = #{id}
+          AND is_deleted = 0
+    </select>
+
+    <!-- ============================================================
+        查询：根据用户名查询
+    ============================================================ -->
+    <select id="selectUserByUsername" resultMap="BaseResultMap">
+        SELECT
+            id,
+            username,
+            password,
+            salt,
+            nickname,
+            avatar,
+            email,
+            phone,
+            gender,
+            birthday,
+            role,
+            status,
+            is_deleted,
+            last_login_ip,
+            last_login_time,
+            create_time,
+            update_time
+        FROM user
+        WHERE username = #{username}
+          AND is_deleted = 0
+    </select>
+
+    <!-- ============================================================
+        查询：条件查询用户列表
+        <if> 标签实现动态 SQL
+    ============================================================ -->
+    <select id="selectUserList" resultMap="BaseResultMap">
+        SELECT
+        id,
+        username,
+        password,
+        salt,
+        nickname,
+        avatar,
+        email,
+        phone,
+        gender,
+        birthday,
+        role,
+        status,
+        is_deleted,
+        last_login_ip,
+        last_login_time,
+        create_time,
+        update_time
+        FROM user
+        WHERE is_deleted = 0
+        <if test="username != null and username != ''">
+            AND username LIKE CONCAT('%', #{username}, '%')
+        </if>
+        <if test="gender != null">
+            AND gender = #{gender}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- ============================================================
+        插入：新用户
+        useGeneratedKeys="true" 表示使用数据库自增主键
+        keyProperty="id" 表示把生成的主键赋值给 User 对象的 id 属性
+    ============================================================ -->
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (
+            username,
+            password,
+            salt,
+            nickname,
+            avatar,
+            email,
+            phone,
+            gender,
+            birthday,
+            role,
+            status,
+            is_deleted,
+            last_login_ip,
+            last_login_time,
+            create_time,
+            update_time
+        ) VALUES (
+                     #{username},
+                     #{password},
+                     #{salt},
+                     #{nickname},
+                     #{avatar},
+                     #{email},
+                     #{phone},
+                     #{gender},
+                     #{birthday},
+                     #{role},
+                     #{status},
+                     0,
+                     #{lastLoginIp},
+                     #{lastLoginTime},
+                     NOW(),
+                     NOW()
+                 )
+    </insert>
+
+    <!-- ============================================================
+        更新：根据 ID 更新用户信息（动态更新，只更新传入的非空字段）
+        <set> 标签会自动处理末尾多余的逗号
+    ============================================================ -->
+    <update id="updateUser">
+        UPDATE user
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="salt != null">salt = #{salt},</if>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="role != null">role = #{role},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="lastLoginIp != null">last_login_ip = #{lastLoginIp},</if>
+            <if test="lastLoginTime != null">last_login_time = #{lastLoginTime},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- ============================================================
+        逻辑删除：把 is_deleted 设为 1
+    ============================================================ -->
+    <update id="deleteUserById">
+        UPDATE user
+        SET is_deleted = 1,
+            update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+</mapper>
