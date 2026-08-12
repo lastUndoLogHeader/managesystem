@@ -39,6 +39,12 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
+    <select id="countAllUsers" resultType="java.lang.Long">
+        select count(1)
+        from user
+        where is_deleted = 0;
+    </select>
+
     <!-- ============================================================
         查询：根据 ID 查询用户
         id 必须和 UserMapper 接口中的方法名一致
@@ -206,5 +212,30 @@
             update_time = NOW()
         WHERE id = #{id}
     </update>
+
+    <select id="selectUserByPage" resultMap="BaseResultMap">
+        SELECT id,
+               username,
+               password,
+               salt,
+               nickname,
+               avatar,
+               email,
+               phone,
+               gender,
+               birthday,
+               role,
+               status,
+               is_deleted,
+               last_login_ip,
+               last_login_time,
+               create_time,
+               update_time
+        FROM user
+        WHERE is_deleted = 0
+        AND id > #{lastId}
+        ORDER BY id ASC
+        limit #{pageSize}
+    </select>
 
 </mapper>

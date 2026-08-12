@@ -16,7 +16,7 @@ spring:
     # 数据库用户名（默认是 root）
     username: root
     # 数据库密码（替换成你自己的密码）
-    password: 0018300wsh   # 注意：有特殊字符时加双引号
+    password: ${MYSQL_PASSWORD}   # 注意：有特殊字符时加双引号
 
   # ---------- 新增 Redis 配置 ----------
   redis:
@@ -35,7 +35,7 @@ spring:
     host: smtp.qq.com
     port: 465
     username: 1477143144@qq.com
-    password: nzbqujpvxeqphjfd
+    password: ${MAIL_AUTHORIZATION_CODE}
     protocol: smtps
     default-encoding: UTF-8
     properties:
@@ -79,7 +79,7 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET:abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+}
-  access-expire-time: 3600000  # 7天，单位毫秒
+  access-expire-time: 3600000  #一小时    单位毫秒
   refresh-expire-time: 2592000000 #30天  单位毫秒
 
 

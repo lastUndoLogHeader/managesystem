@@ -75,7 +75,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (redisUtil.isTokenInBlackList(token)) {
                 log.warn("Token 已被拉黑（用户主动退出），用户：{}", claims.get("username", String.class));
                 request.setAttribute("tokenError", ResultCode.TOKEN_INVALID);
-                filterChain.doFilter(request, response);
+                //token已经被拉黑，请求不应该被放行
+                //filterChain.doFilter(request, response);
                 return;
             }
 

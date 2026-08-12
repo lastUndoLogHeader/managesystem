@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.security.MessageDigest;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,7 +58,7 @@ public class RedisUtil {
      */
     private String getTokenHash(String token) {
         try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] digest = md.digest(token.getBytes(java.nio.charset.StandardCharsets.UTF_8));
             // 把字节数组转成 16 进制字符串
             StringBuilder sb = new StringBuilder();

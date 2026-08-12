@@ -44,9 +44,14 @@ public class UserController {
     @PostMapping("/logout")
     public Result<Void> logout(HttpServletRequest request){
         String authorization = request.getHeader("Authorization");
-        if(authorization == null || !authorization.startsWith("Bearer ")){
+        /*
+        * /users/logout 在 SecurityConfig 中配置为需要认证，
+        * 因此未携带 Token 的请求根本不会到达 Controller，
+        * 会直接由 JwtAuthenticationEntryPoint 返回 401
+        * */
+        /*if(authorization == null || !authorization.startsWith("Bearer ")){
             return Result.error("未登录");
-        }
+        }*/
         String token = authorization.substring(7);
         userService.logout(token);
         return Result.success();

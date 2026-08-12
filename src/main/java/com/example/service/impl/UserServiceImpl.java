@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserVO findUserByUsername(String username) {
         boolean mightContainUsername = bloomFilterUtil.mightContainUsername(username);
-        if (!mightContainUsername) {
+        if (!mightContainUsername  && bloomFilterUtil.isLoadFinished()) {
             log.warn("布隆过滤器确定该用户名不存在，用户名：{}", username);
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
         String password = loginRequest.getPassword();
 
         boolean isContained = bloomFilterUtil.mightContainUsername(username);
-        if (!isContained) {
+        if (!isContained && bloomFilterUtil.isLoadFinished()) {
             log.warn("布隆过滤器确定用户名不存在，用户名：{}", username);
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
